@@ -1,0 +1,17 @@
+env: "local" #local,dev,prod
+server:
+  appVersion: 1.0.0
+  port: :80
+  pProfPort: :5555
+  jwtSecretKey: secretkey
+  mode: Development
+  timeout: 4s
+  ideTimeout: 60s
+postgres:
+  postgresqlHost: localhost
+  postgresqlPort: 5432
+  postgresqlUser: postgres
+  postgresqlPassword: postgres
+  postgresqlDbname: lexicon
+  postgresqlSSLMode: false
+  pgDriver: pgx

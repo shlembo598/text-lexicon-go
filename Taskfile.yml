@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  goose_version:
+    desc: "Show current migration version"
+    cmds:
+      - goose -dir ./migrations postgres "user=postgres password=postgres dbname=lexicon sslmode=disable" version
+
+  goose_up:
+    desc: "Apply the next migration"
+    cmds:
+      - goose -dir ./migrations postgres "user=postgres password=postgres dbname=lexicon sslmode=disable" up
+
+  goose_down:
+    desc: "Revert the last migration"
+    cmds:
+      - goose -dir ./migrations postgres "user=postgres password=postgres dbname=lexicon sslmode=disable" down
