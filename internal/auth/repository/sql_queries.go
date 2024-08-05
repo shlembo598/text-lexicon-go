@@ -15,11 +15,11 @@ func createUserQuery(user *models.User) (string, []interface{}, error) {
 	).Values(
 		&user.FirstName, &user.LastName, &user.Email,
 		&user.Password, time.Now(), time.Now(), time.Now(),
-	).PlaceholderFormat(sq.Dollar).ToSql()
+	).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar).ToSql()
 }
 
 func updateUserQuery(user *models.User) (string, []interface{}, error) {
-	return sq.Update("users").Set(
+	query := sq.Update("users").Set(
 		"first_name", sq.Expr(
 			"COALESCE(NULLIF(?, ''), first_name)",
 			user.FirstName,
@@ -30,11 +30,6 @@ func updateUserQuery(user *models.User) (string, []interface{}, error) {
 			user.LastName,
 		),
 	).Set(
-		"avatar", sq.Expr(
-			"COALESCE(NULLIF(?, ''), avatar)",
-			user.Avatar,
-		),
-	).Set(
 		"country", sq.Expr(
 			"COALESCE(NULLIF(?, ''), country)",
 			user.Country,
@@ -42,8 +37,14 @@ func updateUserQuery(user *models.User) (string, []interface{}, error) {
 	).Set(
 		"updated_at", time.Now(),
 	).Where(
-		"user_id", user.UserID,
-	).PlaceholderFormat(sq.Dollar).ToSql()
+		"user_id = ?", user.UserID,
+	).Suffix("RETURNING *").PlaceholderFormat(sq.Dollar)
+
+	if len(user.Avatar) > 0 {
+		query = query.Set("avatar", user.Avatar)
+	}
+
+	return query.ToSql()
 }
 
 func deleteUserQuery(userID uuid.UUID) (string, []interface{}, error) {
@@ -58,8 +59,8 @@ func getUserQuery(userID uuid.UUID) (string, []interface{}, error) {
 }
 
 func findUserByEmail(email string) (string, []interface{}, error) {
-	return sq.Select("users").Columns(
+	return sq.Select(
 		"user_id", "first_name", "last_name", "email", "avatar", "country", "created_at", "updated_at",
 		"login_date", "password",
-	).Where("email", email).PlaceholderFormat(sq.Dollar).ToSql()
+	).From("users").Where("email = ?", email).PlaceholderFormat(sq.Dollar).ToSql()
 }

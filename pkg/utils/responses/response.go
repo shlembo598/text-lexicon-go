@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/shlembo598/text-lexicon-go/pkg/utils/httpErrors"
 )
 
 const (
@@ -21,9 +21,9 @@ const (
 )
 
 type Response struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data,omitempty"`
-	Error  *APIError   `json:"error,omitempty"`
+	Status string             `json:"status"`
+	Data   interface{}        `json:"data,omitempty"`
+	Error  httpErrors.RestErr `json:"error,omitempty"`
 }
 
 type APIError struct {
@@ -31,23 +31,19 @@ type APIError struct {
 	Error  interface{} `json:"error"`
 }
 
-func SuccessResponse(c echo.Context, code int, data interface{}) error {
-	response := &Response{
+func SuccessResponse(data interface{}) interface{} {
+	return &Response{
 		Status: statusSuccess,
 		Data:   data,
 		Error:  nil,
 	}
-	return c.JSON(code, response)
 }
 
-func ErrorResponse(c echo.Context, code int, error interface{}) error {
+func ErrorResponse(err error) (int, interface{}) {
 	response := &Response{
 		Status: statusError,
 		Data:   nil,
-		Error: &APIError{
-			Status: code,
-			Error:  error,
-		},
+		Error:  httpErrors.ParseErrors(err),
 	}
-	return c.JSON(code, response)
+	return httpErrors.ParseErrors(err).Status(), response
 }

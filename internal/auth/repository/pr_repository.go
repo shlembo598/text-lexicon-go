@@ -31,7 +31,7 @@ func (r *authRepo) Register(ctx context.Context, user *models.User) (*models.Use
 
 	u := &models.User{}
 	if err = r.db.QueryRowxContext(
-		ctx, query, args,
+		ctx, query, args...,
 	).StructScan(u); err != nil {
 		return nil, fmt.Errorf("%s.StructScan: %w", op, err)
 	}
@@ -50,7 +50,7 @@ func (r *authRepo) Update(ctx context.Context, user *models.User) (*models.User,
 
 	u := &models.User{}
 	if err := r.db.GetContext(
-		ctx, u, query, args,
+		ctx, u, query, args...,
 	); err != nil {
 		return nil, fmt.Errorf("%s.GetContext: %w", op, err)
 	}
@@ -67,7 +67,7 @@ func (r *authRepo) Delete(ctx context.Context, userID uuid.UUID) error {
 		return fmt.Errorf("%s.query: %w", op, buildErr)
 	}
 
-	result, err := r.db.ExecContext(ctx, query, args)
+	result, err := r.db.ExecContext(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("%s.ExecContext: %w", op, err)
 	}
@@ -92,7 +92,7 @@ func (r *authRepo) GetById(ctx context.Context, userID uuid.UUID) (*models.User,
 	}
 
 	user := &models.User{}
-	if err := r.db.QueryRowxContext(ctx, query, args).StructScan(&user); err != nil {
+	if err := r.db.QueryRowxContext(ctx, query, args...).StructScan(user); err != nil {
 		return nil, fmt.Errorf("%s.QueryRowxContext: %w", op, buildErr)
 	}
 
@@ -110,7 +110,7 @@ func (r *authRepo) FindByEmail(ctx context.Context, user *models.User) (*models.
 		return nil, fmt.Errorf("%s.query: %w", op, buildErr)
 	}
 
-	if err := r.db.QueryRowxContext(ctx, query, args).StructScan(&foundUser); err != nil {
+	if err := r.db.QueryRowxContext(ctx, query, args...).StructScan(foundUser); err != nil {
 		return nil, fmt.Errorf("%s.QueryRowxContext: %w", op, buildErr)
 	}
 

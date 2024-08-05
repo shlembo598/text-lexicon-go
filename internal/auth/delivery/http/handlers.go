@@ -11,7 +11,7 @@ import (
 	"github.com/shlembo598/text-lexicon-go/internal/config"
 	"github.com/shlembo598/text-lexicon-go/internal/models"
 	"github.com/shlembo598/text-lexicon-go/pkg/utils"
-	"github.com/shlembo598/text-lexicon-go/pkg/utils/responses"
+	r "github.com/shlembo598/text-lexicon-go/pkg/utils/responses"
 )
 
 type authHandlers struct {
@@ -31,16 +31,16 @@ func (h *authHandlers) Register() echo.HandlerFunc {
 		user := &models.User{}
 		if err := utils.ReadRequest(c, user); err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		createdUser, err := h.authUC.Register(utils.GetRequestCtx(c), user)
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusInternalServerError, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return responses.SuccessResponse(c, http.StatusCreated, createdUser)
+		return c.JSON(http.StatusCreated, r.SuccessResponse(createdUser))
 	}
 }
 
@@ -56,7 +56,7 @@ func (h *authHandlers) Login() echo.HandlerFunc {
 		login := &Login{}
 		if err := utils.ReadRequest(c, login); err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		userWithToken, err := h.authUC.Login(
@@ -67,10 +67,10 @@ func (h *authHandlers) Login() echo.HandlerFunc {
 		)
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusUnauthorized, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return responses.SuccessResponse(c, http.StatusOK, userWithToken)
+		return c.JSON(http.StatusOK, r.SuccessResponse(userWithToken))
 	}
 }
 
@@ -80,7 +80,7 @@ func (h *authHandlers) Update() echo.HandlerFunc {
 		uID, err := uuid.Parse(c.Param("user_id"))
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		user := &models.User{}
@@ -88,16 +88,16 @@ func (h *authHandlers) Update() echo.HandlerFunc {
 
 		if err = utils.ReadRequest(c, user); err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		updatedUser, err := h.authUC.Update(utils.GetRequestCtx(c), user)
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusInternalServerError, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return responses.SuccessResponse(c, http.StatusOK, updatedUser)
+		return c.JSON(http.StatusOK, r.SuccessResponse(updatedUser))
 	}
 }
 
@@ -107,12 +107,12 @@ func (h *authHandlers) Delete() echo.HandlerFunc {
 		uId, err := uuid.Parse(c.Param("user_id"))
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		if err = h.authUC.Delete(utils.GetRequestCtx(c), uId); err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusInternalServerError, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		return c.NoContent(http.StatusOK)
@@ -125,16 +125,16 @@ func (h *authHandlers) GetUserByID() echo.HandlerFunc {
 		uId, err := uuid.Parse(c.Param("user_id"))
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusBadRequest, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
 		user, err := h.authUC.GetByID(utils.GetRequestCtx(c), uId)
 		if err != nil {
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusNotFound, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return responses.SuccessResponse(c, http.StatusOK, user)
+		return c.JSON(http.StatusOK, r.SuccessResponse(user))
 	}
 }
 
@@ -145,9 +145,9 @@ func (h *authHandlers) GetMe() echo.HandlerFunc {
 		if !ok {
 			err := errors.New("Unauthorized")
 			utils.LogResponseError(c, err)
-			return responses.ErrorResponse(c, http.StatusUnauthorized, err)
+			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return responses.SuccessResponse(c, http.StatusOK, user)
+		return c.JSON(http.StatusOK, r.SuccessResponse(user))
 	}
 }

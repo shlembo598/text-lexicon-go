@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/google/uuid"
 	"golang.org/x/net/context"
@@ -28,11 +28,11 @@ func (u *authUC) Register(ctx context.Context, user *models.User) (*models.UserW
 
 	existsUser, err := u.authRepo.FindByEmail(ctx, user)
 	if existsUser != nil || err == nil {
-		return nil, errors.New(httpErrors.ErrEmailAlreadyExists)
+		return nil, httpErrors.NewRestErrorWithMessage(http.StatusBadRequest, httpErrors.ErrEmailAlreadyExists, nil)
 	}
 
 	if err = user.PrepareCreate(); err != nil {
-		return nil, fmt.Errorf("%s.PrepareCreate: %w", op, err)
+		return nil, httpErrors.NewBadRequestError(fmt.Errorf("%s.PrepareCreate: %w", op, err))
 	}
 
 	createdUser, err := u.authRepo.Register(ctx, user)
@@ -44,7 +44,7 @@ func (u *authUC) Register(ctx context.Context, user *models.User) (*models.UserW
 
 	token, err := utils.GenerateJWTToken(createdUser, u.cfg)
 	if err != nil {
-		return nil, fmt.Errorf("%s.GenerateJWTToken: %w", op, err)
+		return nil, httpErrors.NewInternalServerError(fmt.Errorf("%s.GenerateJWTToken: %w", op, err))
 	}
 
 	return &models.UserWithToken{
@@ -63,14 +63,14 @@ func (u *authUC) Login(ctx context.Context, user *models.User) (*models.UserWith
 	}
 
 	if err = foundUser.ComparePasswords(user.Password); err != nil {
-		return nil, fmt.Errorf("%s.ComparePasswords: %w", op, errors.New(httpErrors.ErrUnauthorized))
+		return nil, httpErrors.NewUnauthorizedError(fmt.Errorf("%s.ComparePasswords: %w", op, err))
 	}
 
 	foundUser.SanitizePassword()
 
 	token, err := utils.GenerateJWTToken(foundUser, u.cfg)
 	if err != nil {
-		return nil, fmt.Errorf("%s.GenerateJWTToken: %w", op, err)
+		return nil, httpErrors.NewInternalServerError(fmt.Errorf("%s.GenerateJWTToken: %w", op, err))
 	}
 
 	return &models.UserWithToken{
@@ -83,7 +83,7 @@ func (u *authUC) Update(ctx context.Context, user *models.User) (*models.User, e
 	const op = "auth.userCase.update"
 
 	if err := user.PrepareUpdate(); err != nil {
-		return nil, fmt.Errorf("%s.PrepareUpdate: %w", op, err)
+		return nil, httpErrors.NewBadRequestError(fmt.Errorf("%s.PrepareUpdate: %w", op, err))
 	}
 
 	updatedUser, err := u.authRepo.Update(ctx, user)
