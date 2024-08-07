@@ -115,7 +115,7 @@ func (h *authHandlers) Delete() echo.HandlerFunc {
 			return c.JSON(r.ErrorResponse(err))
 		}
 
-		return c.NoContent(http.StatusOK)
+		return c.JSON(http.StatusOK, r.SuccessResponse("Successfully deleted"))
 	}
 }
 

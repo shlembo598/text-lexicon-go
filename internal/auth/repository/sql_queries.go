@@ -48,14 +48,14 @@ func updateUserQuery(user *models.User) (string, []interface{}, error) {
 }
 
 func deleteUserQuery(userID uuid.UUID) (string, []interface{}, error) {
-	return sq.Delete("users").Where("user_id", userID).PlaceholderFormat(sq.Dollar).ToSql()
+	return sq.Delete("users").Where("user_id = ?", userID).PlaceholderFormat(sq.Dollar).ToSql()
 }
 
 func getUserQuery(userID uuid.UUID) (string, []interface{}, error) {
-	return sq.Select("users").Columns(
+	return sq.Select().Columns(
 		"user_id", "first_name", "last_name", "email", "avatar", "country", "created_at", "updated_at",
 		"login_date",
-	).Where("user_id", userID).PlaceholderFormat(sq.Dollar).ToSql()
+	).From("users").Where("user_id = ?", userID).PlaceholderFormat(sq.Dollar).ToSql()
 }
 
 func findUserByEmail(email string) (string, []interface{}, error) {
