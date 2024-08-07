@@ -1,7 +1,6 @@
 package http
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -11,6 +10,7 @@ import (
 	"github.com/shlembo598/text-lexicon-go/internal/config"
 	"github.com/shlembo598/text-lexicon-go/internal/models"
 	"github.com/shlembo598/text-lexicon-go/pkg/utils"
+	"github.com/shlembo598/text-lexicon-go/pkg/utils/httpErrors"
 	r "github.com/shlembo598/text-lexicon-go/pkg/utils/responses"
 )
 
@@ -141,11 +141,10 @@ func (h *authHandlers) GetUserByID() echo.HandlerFunc {
 // TODO: swagger specification
 func (h *authHandlers) GetMe() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		user, ok := c.Get("User").(*models.User)
+		user, ok := c.Get("user").(*models.User)
 		if !ok {
-			err := errors.New("Unauthorized")
-			utils.LogResponseError(c, err)
-			return c.JSON(r.ErrorResponse(err))
+			utils.LogResponseError(c, httpErrors.Unauthorized)
+			return c.JSON(r.ErrorResponse(httpErrors.Unauthorized))
 		}
 
 		return c.JSON(http.StatusOK, r.SuccessResponse(user))

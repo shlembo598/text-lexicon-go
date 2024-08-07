@@ -12,6 +12,9 @@ import (
 // ReqIDCtxKey is a key used for the Request ID in context
 type ReqIDCtxKey struct{}
 
+// UserCtxKey is a key used for the User object in the context
+type UserCtxKey struct{}
+
 // Get request id from echo context
 func GetRequestID(c echo.Context) string {
 	return c.Response().Header().Get(echo.HeaderXRequestID)

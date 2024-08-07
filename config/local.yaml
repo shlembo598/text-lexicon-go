@@ -7,6 +7,7 @@ server:
   mode: Development
   timeout: 4s
   ideTimeout: 60s
+  debug: false
 postgres:
   postgresqlHost: localhost
   postgresqlPort: 5432

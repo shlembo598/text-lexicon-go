@@ -28,6 +28,7 @@ type HttpServer struct {
 	Mode         string        `yaml:"mode" env-default:"Development"`
 	Timeout      time.Duration `yaml:"timeout" env-default:"5s"`
 	IdleTimeout  time.Duration `yaml:"ideTimeout" env-default:"60s"`
+	Debug        bool          `yaml:"debug" env-default:"false"`
 }
 
 type Postgres struct {
