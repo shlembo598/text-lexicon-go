@@ -23,7 +23,14 @@ func NewAuthHandlers(cfg *config.Config, authUC auth.UseCase) auth.Handlers {
 	return &authHandlers{cfg: cfg, authUC: authUC}
 }
 
-// TODO: swagger specification
+// Register godoc
+// @Summary Register new user
+// @Description register new user, returns user and token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 201 {object} models.User
+// @Router /auth/register [post]
 func (h *authHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// TODO: tracing
@@ -44,7 +51,14 @@ func (h *authHandlers) Register() echo.HandlerFunc {
 	}
 }
 
-// TODO: swagger specification
+// Login godoc
+// @Summary Login new user
+// @Description login user, returns user and set session
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /auth/login [post]
 func (h *authHandlers) Login() echo.HandlerFunc {
 	type Login struct {
 		Email    string `json:"email" db:"email" validate:"omitempty,lte=60,email"`
@@ -74,7 +88,15 @@ func (h *authHandlers) Login() echo.HandlerFunc {
 	}
 }
 
-// TODO: swagger specification
+// Update godoc
+// @Summary Update user
+// @Description update existing user
+// @Tags Auth
+// @Accept json
+// @Param id path int true "user_id"
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /auth/{id} [put]
 func (h *authHandlers) Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uID, err := uuid.Parse(c.Param("user_id"))
@@ -101,7 +123,16 @@ func (h *authHandlers) Update() echo.HandlerFunc {
 	}
 }
 
-// TODO: swagger specification
+// Delete
+// @Summary Delete user account
+// @Description some description
+// @Tags Auth
+// @Accept json
+// @Param id path int true "user_id"
+// @Produce json
+// @Success 200 {string} string	"ok"
+// @Failure 500 {object} httpErrors.RestError
+// @Router /auth/{id} [delete]
 func (h *authHandlers) Delete() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uId, err := uuid.Parse(c.Param("user_id"))
@@ -119,7 +150,16 @@ func (h *authHandlers) Delete() echo.HandlerFunc {
 	}
 }
 
-// TODO: swagger specification
+// GetUserByID godoc
+// @Summary get user by id
+// @Description get string by ID
+// @Tags Auth
+// @Accept  json
+// @Produce  json
+// @Param id path int true "user_id"
+// @Success 200 {object} models.User
+// @Failure 500 {object} httpErrors.RestError
+// @Router /auth/{id} [get]
 func (h *authHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uId, err := uuid.Parse(c.Param("user_id"))
@@ -138,7 +178,15 @@ func (h *authHandlers) GetUserByID() echo.HandlerFunc {
 	}
 }
 
-// TODO: swagger specification
+// GetMe godoc
+// @Summary Get user by id
+// @Description Get current user by id
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Failure 500 {object} httpErrors.RestError
+// @Router /auth/me [get]
 func (h *authHandlers) GetMe() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user, ok := c.Get("user").(*models.User)

@@ -1,5 +1,7 @@
 version: '3'
 
+# ==============================================================================
+# Go migrate postgresql
 tasks:
   goose_version:
     desc: "Show current migration version"
@@ -15,3 +17,17 @@ tasks:
     desc: "Revert the last migration"
     cmds:
       - goose -dir ./migrations postgres "user=postgres password=postgres dbname=lexicon sslmode=disable" down
+
+  # ==============================================================================
+  # Tools commands
+  run_linter:
+    desc: "Starting linters"
+    cmds:
+      - golangci-lint run ./...
+
+  swaggo:
+    desc: "Starting swagger generating"
+    cmds:
+      - swag init -g **/**/*.go
+
+# ==============================================================================

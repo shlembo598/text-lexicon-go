@@ -1,0 +1,164 @@
+definitions:
+  httpErrors.RestError:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      avatar:
+        items:
+          type: integer
+        type: array
+      country:
+        maxLength: 24
+        type: string
+      created_at:
+        type: string
+      email:
+        maxLength: 60
+        type: string
+      first_name:
+        maxLength: 30
+        type: string
+      last_name:
+        maxLength: 30
+        type: string
+      login_date:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - first_name
+    - last_name
+    - password
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: some description
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Delete user account
+      tags:
+      - Auth
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: get user by id
+      tags:
+      - Auth
+    put:
+      consumes:
+      - application/json
+      description: update existing user
+      parameters:
+      - description: user_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Update user
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login user, returns user and set session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Login new user
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Get current user by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpErrors.RestError'
+      summary: Get user by id
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register new user, returns user and token
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register new user
+      tags:
+      - Auth
+swagger: "2.0"

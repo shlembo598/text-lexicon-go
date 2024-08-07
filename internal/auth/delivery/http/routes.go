@@ -14,9 +14,9 @@ func MapAuthRoutes(
 ) {
 	authGroup.POST("/register", h.Register())
 	authGroup.POST("/login", h.Login())
-	authGroup.PUT("/:user_id", h.Update())
-	authGroup.DELETE("/:user_id", h.Delete())
 	authGroup.GET("/:user_id", h.GetUserByID())
 	authGroup.Use(mw.AuthJWTMiddleware(authUc, cfg))
+	authGroup.PUT("/:user_id", h.Update())
+	authGroup.DELETE("/:user_id", h.Delete())
 	authGroup.GET("/me", h.GetMe())
 }

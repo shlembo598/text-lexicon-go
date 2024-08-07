@@ -7,7 +7,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 
+	"github.com/shlembo598/text-lexicon-go/docs"
 	authHttp "github.com/shlembo598/text-lexicon-go/internal/auth/delivery/http"
 	authRepository "github.com/shlembo598/text-lexicon-go/internal/auth/repository"
 	authUseCase "github.com/shlembo598/text-lexicon-go/internal/auth/usecase"
@@ -29,7 +31,8 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	e.Use(mw.RequestLoggerMiddleware)
 
-	// Swagger
+	docs.SwaggerInfo.Title = "Text lexicon REST API"
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Use(
 		middleware.CORSWithConfig(
